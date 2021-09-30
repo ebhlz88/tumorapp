@@ -8,7 +8,6 @@ import "bootstrap/dist/css/bootstrap.css";
 Vue.use(BootstrapVue);
 
 import login from "../components/login.vue";
-import upload from "../components/upload.vue";
 import home from "../components/home.vue";
 import dl from "../components/dl.vue";
 import cam from "../components/cam.vue";
@@ -19,7 +18,6 @@ Vue.use(VueRouter);
 const routes = [
   { path: "/", component: home },
   { path: "/login", component: login },
-  { path: "/upload", component: upload },
   { path: "/dl", component: dl },
   { path: "/cam", component: cam },
   { path: "/pred", component: pred },

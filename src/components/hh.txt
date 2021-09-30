@@ -1,0 +1,144 @@
+<div class="row uploaddiv">
+      <!-- v-if="showupload" -->
+      <div class="col-md-2 divupload">
+        <h4>Upload Image</h4>
+        <div>
+          Select Image
+          <!-- <input type="file" @change="onFileChanged" /> -->
+        </div>
+        <br />
+        <button class="btn btn btn-primary" @click="upload">Upload</button>
+      </div>
+      <div class="d-flex align-self-center"><h5>or</h5></div>
+      <div class="col-md-2 divupload">
+        <h4 class="camera-button">Capture Image</h4>
+        <div class="camera-button">
+          <button
+            type="button"
+            class="btn btn-primary button"
+            @click="toggleCamera"
+          >
+            <span v-if="!isCameraOpen">Open Camera</span>
+            <span v-else>Close Camera</span>
+          </button>
+        </div>
+        <!-- <div>
+          <div id="cam" class="web-camera-container">
+            <div v-show="isCameraOpen && isLoading" class="camera-loading">
+              <ul class="loader-circle">
+                <li></li>
+                <li></li>
+                <li></li>
+              </ul>
+            </div>
+            <div
+              v-if="isCameraOpen"
+              v-show="!isLoading"
+              class="camera-box"
+              :class="{ flash: isShotPhoto }"
+            >
+              <div class="camera-shutter" :class="{ flash: isShotPhoto }"></div>
+
+              <video
+                v-show="!isPhotoTaken"
+                ref="camera"
+                :width="450"
+                :height="337.5"
+                autoplay
+              ></video>
+
+              <canvas
+                v-show="isPhotoTaken"
+                id="photoTaken"
+                ref="canvas"
+                :width="450"
+                :height="337.5"
+                class="camera"
+              ></canvas>
+            </div>
+
+            <div v-if="isCameraOpen && !isLoading" class="camera-shoot">
+              <button type="button" class="button" @click="takePhoto">
+                <img
+                  src="https://img.icons8.com/material-outlined/50/000000/camera--v2.png"
+                />
+              </button>
+            </div>
+            <div v-if="isPhotoTaken && isCameraOpen" class="camera-download">
+              <button
+                id="downloadPhoto"
+                download="my-photo.jpg"
+                class="btn btn-primary"
+                role="button"
+                @click="downloadImage"
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+    <div class="uploaddiv">
+      <button
+        v-if="!showupload"
+        class="btn btn btn-primary my-3"
+        @click="resultnone"
+      >
+        Back
+      </button>
+      <button
+        v-if="showupload"
+        class="btn btn btn-primary my-3"
+        @click="getresult"
+      >
+        Show Result
+      </button>
+      <div v-if="!showupload">
+        <div class="col" v-for="items in result" :key="items.dfsf">
+          <img
+            v-if="items.tphoto"
+            :src="localhost + items.tphoto"
+            alt="image"
+            class="image"
+          />
+          <br />
+          <h4 v-if="items.description">Name:{{ items.description }}</h4>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+<div v-if="isPhotoTaken && isCameraOpen" class="camera-download">
+            <button
+              id="downloadPhoto"
+              download="my-photo.jpg"
+              class="btn btn-primary"
+              role="button"
+              @click="downloadImage"
+            >
+              Upload
+            </button>
+          </div>
+
+
+          
+downloadImage() {
+      const canvas = document
+        .getElementById("photoTaken")
+        .toDataURL("image/jpeg")
+        .replace("image/jpeg", "image/octet-stream");
+      var block = canvas.split(";");
+      var contentType = block[0].split(":")[1];
+      var realData = block[1].split(",")[1];
+      var blob = this.b64toBlob(realData, contentType);
+      let tdata = new FormData();
+      tdata.append("tphoto", blob);
+      axios
+        .post("http://127.0.0.1:8000/cupload/" + this.username, tdata)
+        .then(() => {});
+    },

@@ -2,7 +2,10 @@
   <div id="navdiv">
     <nav id="nav" class="navbar navbar-expand-lg navbar-light nav">
       <div class="container-fluid">
-        <router-link class="navbar-brand" to="/"
+        <router-link v-if="isloggedin" class="navbar-brand" to="/"
+          ><p class="rr">Home</p>
+        </router-link>
+        <router-link v-if="!isloggedin" class="navbar-brand" to="/login"
           ><p class="rr">Home</p>
         </router-link>
         <router-link class="navbar-brand" to="/dl" v-if="isloggedin"
@@ -14,11 +17,11 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mb-2 mb-lg-0 mlauto">
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <router-link v-if="!isloggedin" class="nav-link" to="/login"
                 ><b>Login</b></router-link
               >
-            </li>
+            </li> -->
             <li class="nav-item">
               <div class="nav-link logoutdiv">
                 <button v-if="isloggedin" @click="logout" class="astext">

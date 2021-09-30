@@ -70,10 +70,20 @@
           placeholder="Confirm Password"
         />
       </div>
-      <button v-if="code==fieldcode" type="submit" @click="createac" class="btn btn-primary mb-2">
+      <button
+        v-if="code == fieldcode"
+        type="submit"
+        @click="createac"
+        class="btn btn-primary mb-2"
+      >
         Create Account
       </button>
-      <button v-if="code!=fieldcode" type="submit" disabled class="btn btn-primary mb-2">
+      <button
+        v-if="code != fieldcode"
+        type="submit"
+        disabled
+        class="btn btn-primary mb-2"
+      >
         Create Account
       </button>
     </div>
@@ -101,6 +111,7 @@
         Login
       </button>
     </div>
+    <br />
   </div>
 </template>
 
@@ -120,8 +131,9 @@ export default {
   data() {
     return {
       isloggedin: false,
-      code:33,
-      fieldcode:null,
+      code: 33,
+      fieldcode: null,
+      testsocial: null,
       registerdata: {
         username: null,
         email: null,
@@ -152,9 +164,9 @@ export default {
     };
   },
   methods: {
-    getcode(){
+    getcode() {
       Vue.axios
-        .get("http://127.0.0.1:8000/semail/"+ this.registerdata.email )
+        .get("http://127.0.0.1:8000/semail/" + this.registerdata.email)
         .then((resp) => {
           this.code = resp.data.code;
         });
@@ -191,18 +203,17 @@ export default {
         });
     },
     onSuccess(googleUser) {
-      console.log("sucesssssss");
-      this.socialdata.access_token = googleUser.Zb.access_token;
-      console.log(googleUser.Rs.mU);
+      this.testsocial = googleUser.dt.uU;
+      this.socialdata.access_token = googleUser.$b.access_token;
       axios
         .post("http://127.0.0.1:8000/social-login/google/", this.socialdata)
         .then((resp) => {
-          var token = { Authorization: "key " + resp.data.key };
-          this.$store.dispatch("token", token);
+          console.log(resp);
+          console.log("sdfsdfsadfsdafsdaf");
           this.$store.dispatch("isloggedin", true);
-          this.$store.dispatch("username", googleUser.Rs.mU);
+          this.$store.dispatch("username", googleUser.dt.uU);
 
-          this.$router.push("upload");
+          this.$router.push("/");
         });
     },
   },
@@ -215,7 +226,7 @@ export default {
   justify-content: center;
   margin-left: 0%;
 }
-.rr .form-control{
+.rr .form-control {
   width: auto;
 }
 .btns .btn {
@@ -234,7 +245,7 @@ export default {
   margin-top: 40px;
   margin-left: 40%;
 }
-.rr .btn{
+.rr .btn {
   width: 70px;
   height: 40px;
   margin-top: 9px;

@@ -26,6 +26,6 @@ export default {
   background-size: cover;
 }
 .rview {
-  height: 576px;
+  min-height: 576px;
 }
 </style>
