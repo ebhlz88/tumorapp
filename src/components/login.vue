@@ -15,7 +15,7 @@
         Sign in
       </button>
       <GoogleLogin
-        class="col-md-1"
+        class="col-md-2"
         :params="params"
         :renderParams="renderParams"
         :onSuccess="onSuccess"
@@ -42,12 +42,13 @@
         />
       </div>
       <div class="form-group mx-sm-3 mb-2 rr row">
-        <button class="mx-sm-1 btn btn-primary" @click="getcode">verify</button>
+        <button class="mx-sm-1 btn btn-primary" id="verifybtn" @click="getcode">
+          verify
+        </button>
         <input
           type="text"
           class="form-control"
           v-model="fieldcode"
-          id="staticEmail2"
           placeholder="Code"
         />
       </div>
@@ -57,7 +58,7 @@
           type="password"
           class="form-control"
           v-model="registerdata.password1"
-          id="inputPassword2"
+          id="inputPassword1"
           placeholder="Password"
         />
       </div>
@@ -70,6 +71,9 @@
           placeholder="Confirm Password"
         />
       </div>
+      <div class="form-group mx-sm-3 mb-2">
+        <p v-if="status" id="notmatch">Password Does Not Match</p>
+      </div>
       <button
         v-if="code == fieldcode"
         type="submit"
@@ -81,8 +85,8 @@
       <button
         v-if="code != fieldcode"
         type="submit"
-        disabled
         class="btn btn-primary mb-2"
+        disabled
       >
         Create Account
       </button>
@@ -132,6 +136,7 @@ export default {
     return {
       isloggedin: false,
       code: 33,
+      status: false,
       fieldcode: null,
       testsocial: null,
       registerdata: {
@@ -169,15 +174,42 @@ export default {
         .get("http://127.0.0.1:8000/semail/" + this.registerdata.email)
         .then((resp) => {
           this.code = resp.data.code;
+          document.getElementById("verifybtn").disabled = true;
         });
     },
     createac() {
-      axios
-        .post(
-          "http://127.0.0.1:8000/rest-auth/registration/",
-          this.registerdata
-        )
-        .then(() => {});
+      if (this.registerdata.password1 != this.registerdata.password2) {
+        this.status = true;
+        setTimeout(function () {
+          document.getElementById("notmatch").style.display = "none";
+          this.status = false;
+        }, 5000);
+        document.getElementById("notmatch").style.display = "flex";
+      } else {
+        axios
+          .post(
+            "http://127.0.0.1:8000/rest-auth/registration/",
+            this.registerdata
+          )
+          .then((resp) => {
+            this.$toaster.success(
+              "Account is Created as " + this.registerdata.username
+            );
+            document.getElementById("verifybtn").disabled = false;
+            var token = {
+              headers: {
+                Authorization: "Token " + resp.data.key,
+              },
+            };
+            this.$store.dispatch("token", token);
+            this.$store.dispatch("isloggedin", true);
+            this.$store.dispatch("username", this.registerdata.username);
+            this.$router.push("/");
+          })
+          .catch((error) => {
+            this.$toaster.error("Failed" + error);
+          });
+      }
     },
     signupshow() {
       this.showsignup = true;
@@ -193,13 +225,19 @@ export default {
         .then((resp) => {
           var token = {
             headers: {
-              Authorization: "key " + resp.data.key,
+              Authorization: "Token " + resp.data.key,
             },
           };
           this.$store.dispatch("token", token);
           this.$store.dispatch("isloggedin", true);
           this.$store.dispatch("username", this.logindata.username);
           this.$router.push("/");
+          this.$toaster.success(
+            "Logged in Successfully as " + this.logindata.username
+          );
+        })
+        .catch((error) => {
+          this.$toaster.error("Failed" + error);
         });
     },
     onSuccess(googleUser) {
@@ -209,11 +247,20 @@ export default {
         .post("http://127.0.0.1:8000/social-login/google/", this.socialdata)
         .then((resp) => {
           console.log(resp);
-          console.log("sdfsdfsadfsdafsdaf");
+          var token = {
+            headers: {
+              Authorization: "Token " + resp.data.key,
+            },
+          };
+          this.$store.dispatch("token", token);
           this.$store.dispatch("isloggedin", true);
-          this.$store.dispatch("username", googleUser.dt.uU);
+          this.$store.dispatch("username", googleUser.dt.uU.toLowerCase());
 
           this.$router.push("/");
+          this.$toaster.success("Logged in Successfully");
+        })
+        .catch((resp) => {
+          this.$toaster.error("Failed" + resp);
         });
     },
   },

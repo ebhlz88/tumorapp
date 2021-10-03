@@ -52,6 +52,7 @@ export default {
         this.$store.dispatch("token", null);
         this.$store.dispatch("isloggedin", false);
         this.$store.dispatch("username", NaN);
+        document.getElementById("verifybtn").disabled = true;
       });
     },
   },

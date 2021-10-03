@@ -5,16 +5,34 @@
         <div class="head">
           <div class="nav">
             <h4 class="nav-item">File Upload</h4>
-            <button id="newupload" type="button" class="btn btn-primary nav-item" @click="newupload" >
+            <button
+              type="button"
+              v-if="shownew"
+              class="btn btn-primary nav-item"
+              @click="newupload"
+            >
               New +
+            </button>
+            <button
+              type="button"
+              v-if="!shownew"
+              class="btn btn-primary nav-item"
+              @click="cancelupload"
+            >
+              Cancel
             </button>
           </div>
         </div>
-        <div class="ndiv row">
-          <div class="col-md-6 my-4 tt">
+        <div class="ndiv row d-flex justify-content-center">
+          <div class="col-md-5 my-4 tt">
             <p>Upload File</p>
             <!-- <input type="file"> -->
-            <button id="chooseimg" class="btn btn-primary" @click="bclick" disabled>
+            <button
+              id="chooseimg"
+              class="btn btn-primary"
+              @click="bclick"
+              disabled
+            >
               Choose Image
             </button>
             <p>{{ filename }}</p>
@@ -25,7 +43,10 @@
               style="display: none"
             />
           </div>
-          <div class="col-md-6 my-4 tt">
+          <div class="col-md-2 align-self-center">
+            <p>or</p>
+          </div>
+          <div class="col-md-5 my-4 tt">
             <p>Capture Image</p>
             <div class="camera-button">
               <button
@@ -38,9 +59,17 @@
                 <span v-if="!isCameraOpen">Open Camera</span>
                 <span v-else>Close Camera</span>
               </button>
+              <p v-if="isPhotoTaken">Captured Image</p>
             </div>
           </div>
-          <button id="uploadimg" class="btn btn-primary" @click="upload" disabled>Upload Image</button>
+          <button
+            id="uploadimg"
+            class="btn btn-primary"
+            @click="upload"
+            disabled
+          >
+            Upload Image
+          </button>
         </div>
       </div>
       <div class="camera col-md-6">
@@ -79,39 +108,31 @@
 
           <div v-if="isCameraOpen && !isLoading" class="camera-shoot">
             <button type="button" class="button" @click="takePhoto">
-              <img
-                src="../assets/camerashutter.png"
-              />
+              <img src="../assets/camerashutter.png" />
             </button>
           </div>
         </div>
       </div>
     </div>
-    <div>
+    <div class="col-md-6">
       <button
-        v-if="!showupload"
-        class="btn btn btn-primary my-3"
-        @click="resultnone"
-      >
-        Back
-      </button>
-      <button
-        v-if="showupload"
+        v-if="showupload && rstbtnshow"
         class="btn btn btn-primary my-3"
         @click="getresult"
       >
         Show Result
       </button>
       <div v-if="!showupload">
-        <div class="col" v-for="items in result" :key="items.dfsf">
+        <!-- v-for="items in result" :key="items.dfsf" -->
+        <div class="col">
           <img
-            v-if="items.tphoto"
-            :src="localhost + items.tphoto"
+            v-if="result.tphoto"
+            :src="localhost + result.tphoto"
             alt="image"
             class="image"
           />
           <br />
-          <h4 v-if="items.description">Name:{{ items.description }}</h4>
+          <h4 v-if="result.description">Name:{{ result.description }}</h4>
         </div>
       </div>
     </div>
@@ -137,8 +158,10 @@ export default {
       filename: null,
       isCameraOpen: false,
       isPhotoTaken: false,
+      shownew: true,
       isShotPhoto: false,
       isLoading: false,
+      rstbtnshow: true,
       link: "#",
       picture: {
         tphoto: null,
@@ -152,13 +175,28 @@ export default {
   },
 
   methods: {
-    newupload(){
+    newupload() {
       document.getElementById("chooseimg").disabled = false;
       document.getElementById("captureimg").disabled = false;
       document.getElementById("uploadimg").disabled = false;
-      document.getElementById("newupload").disabled = true;
-      this.filename = null
-      this.imagefile = null
+      this.filename = null;
+      this.imagefile = null;
+      this.rstbtnshow = false;
+      this.showupload = true;
+      this.shownew = false;
+    },
+    cancelupload() {
+      document.getElementById("chooseimg").disabled = true;
+      document.getElementById("captureimg").disabled = true;
+      document.getElementById("uploadimg").disabled = true;
+      this.rstbtnshow = true;
+      this.shownew = true;
+      if (this.isCameraOpen) {
+        this.isCameraOpen = false;
+        this.isPhotoTaken = false;
+        this.isShotPhoto = false;
+        this.stopCameraStream();
+      }
     },
     bclick() {
       document.getElementById("getFile").click();
@@ -176,7 +214,7 @@ export default {
     },
     getresult() {
       Vue.axios
-        .get("http://127.0.0.1:8000/cupload/" + this.username)
+        .get("http://127.0.0.1:8000/cupload/" + this.username, this.token)
         .then((resp) => {
           this.result = resp.data;
           this.showupload = false;
@@ -279,18 +317,31 @@ export default {
       let tdata = new FormData();
       tdata.append("tphoto", this.imagefile);
       axios
-        .post("http://127.0.0.1:8000/cupload/" + this.username, tdata)
+        .post(
+          "http://127.0.0.1:8000/cupload/" + this.username,
+          tdata,
+          this.token
+        )
         .then(() => {
           document.getElementById("chooseimg").disabled = true;
           document.getElementById("captureimg").disabled = true;
           document.getElementById("uploadimg").disabled = true;
-          document.getElementById("newupload").disabled = false;
-          this.filename = null
-          this.imagefile = null
-          this.$toaster.success('Uploaded Successfully.')
-        }).catch(error=>{
-       this.$toaster.error('Not Uploaded.'+error)
- })
+          this.filename = null;
+          this.shownew = true;
+          this.showupload = true;
+          this.rstbtnshow = true;
+          this.imagefile = null;
+          if (this.isCameraOpen) {
+            this.isCameraOpen = false;
+            this.isPhotoTaken = false;
+            this.isShotPhoto = false;
+            this.stopCameraStream();
+          }
+          this.$toaster.success("Uploaded Successfully.");
+        })
+        .catch((error) => {
+          this.$toaster.error("Not Uploaded." + error);
+        });
     },
   },
 };
@@ -305,6 +356,9 @@ export default {
 #pred .align-self-center {
   width: 5px;
   height: 5px;
+}
+#pred .row {
+  margin-right: 0px;
 }
 // .camera{
 
@@ -426,7 +480,7 @@ export default {
     }
   }
 }
-#pred{
+#pred {
   padding-bottom: 30px;
 }
 .ndiv {
@@ -435,7 +489,7 @@ export default {
   background-color: rgb(228, 228, 228);
   color: black;
   border-radius: 0px 0px 5px 5px;
-  margin-left: 40px;
+  margin-left: 60px;
   padding-bottom: 30px;
 }
 .head {
@@ -443,7 +497,8 @@ export default {
   width: 80%;
   background-color: rgb(68, 68, 68);
   border-radius: 5px 5px 0px 0px;
-  margin-left: 40px;
+  margin-left: 60px;
+  margin-top: 50px;
   padding: 0px auto;
 }
 .head .btn {
@@ -464,10 +519,11 @@ export default {
 .tt .btn-primary {
   background-color: rgb(0, 110, 153);
   height: 40px;
-  width: 55%;
+  width: 69%;
 }
-.image{
-  width: 40%;
-  height: 40%;
+.image {
+  width: 90%;
+  height: 90%;
+  margin-top: 30px;
 }
 </style>
