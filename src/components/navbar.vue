@@ -60,13 +60,16 @@ export default {
 </script>
 
 <style>
+#navdiv{
+  background-color: cadetblue;
+}
 .astext {
   background: none;
   border: none;
   margin: 0;
   padding: 0;
   cursor: pointer;
-  color: #fff;
+  color: rgb(0, 0, 0);
 }
 .navbar {
   display: flex;
@@ -75,6 +78,10 @@ export default {
   padding: 0px !important;
   width: 100%;
   height: 70px;
+}
+.navbar-brand{
+  height: 30px;
+  padding-top: 0px !important;
 }
 #nav .nav-item {
   margin-right: 40px;
@@ -87,10 +94,10 @@ export default {
   padding: 5px;
 }
 .navbar-nav li .nav-link {
-  color: rgb(255, 255, 255) !important;
+  color: rgb(0, 0, 0) !important;
 }
 .rr {
-  color: rgb(255, 255, 255) !important;
+  color: rgb(0, 0, 0) !important;
   font-weight: 600;
 }
 .fa-bars {

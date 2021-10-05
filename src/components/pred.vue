@@ -114,6 +114,7 @@
         </div>
       </div>
     </div>
+    <div class="row">
     <div class="col-md-6">
       <button
         v-if="showupload && rstbtnshow"
@@ -124,17 +125,24 @@
       </button>
       <div v-if="!showupload">
         <!-- v-for="items in result" :key="items.dfsf" -->
-        <div class="col">
+        <div class="row">
+        <div class="col-md-11">
           <img
             v-if="result.tphoto"
             :src="localhost + result.tphoto"
             alt="image"
             class="image"
           />
-          <br />
-          <h4 v-if="result.description">Name:{{ result.description }}</h4>
         </div>
+        <div class="row col-md-1">
+          <h4 class="py-5" v-if="result.description" >Prediction:{{ result.description }}</h4>
+          </div>
+          </div>
       </div>
+    </div>
+    <!-- <div v-if="!showupload && result.description">
+      <h4 v-if="result.description">Prediction:{{ result.description }}</h4>
+    </div> -->
     </div>
   </div>
 </template>
@@ -170,7 +178,7 @@ export default {
       imagefile: null,
       result: null,
       showupload: true,
-      localhost: "http://127.0.0.1:8000",
+      localhost: "http://127.0.0.1:8000/media/",
     };
   },
 
@@ -348,6 +356,17 @@ export default {
 </script>
 
 <style lang="scss">
+#pred{
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #ffffff;
+  background-image: url("../assets/section-1.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
 #pred .divupload {
   margin: 20px;
   padding-top: 20px;
@@ -525,5 +544,9 @@ export default {
   width: 90%;
   height: 90%;
   margin-top: 30px;
+  margin-right: 0px;
+}
+.disc{
+  color: white;
 }
 </style>

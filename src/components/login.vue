@@ -268,6 +268,17 @@ export default {
 </script>
 
 <style>
+#login{
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #ffffff;
+  background-image: url("../assets/login-background1.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
 .btns {
   display: flex;
   justify-content: center;
